@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" placeholder="Message" id="inputMessage">
+    <input type="button" value="Send Message" onclick="sendmsg()">
+    <script>
+        async function sendmsg() {
+            let input = document.getElementById("inputMessage")
+            let response = await fetch("https://trolo-1252e-default-rtdb.firebaseio.com/main.json", {
+                method: "PUT",
+                body: JSON.stringify({
+                    message:input.value
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+
+        }
+    </script>
+</body>
+</html>
