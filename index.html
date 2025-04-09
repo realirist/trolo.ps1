@@ -1,27 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>trolo.ps1 control center</title>
 </head>
+
 <body>
-    <input type="text" placeholder="Message" id="inputMessage">
-    <input type="button" value="Send Message" onclick="sendmsg()">
+    <div class="centered">
+        <h1>trolo.ps1</h1>
+        <br>
+        <textarea type="text" placeholder="Message" id="inputMessage"></textarea>
+        <br>
+        <button onclick="sendmsg()">Send Message</button>
+        <br>
+        <button onclick="downloadtrolo()">Download "trolo.ps1"</button>
+    </div>
     <script>
         async function sendmsg() {
             let input = document.getElementById("inputMessage")
             let response = await fetch("https://trolo-1252e-default-rtdb.firebaseio.com/main.json", {
                 method: "PUT",
                 body: JSON.stringify({
-                    message:input.value
+                    message: input.value
                 }),
                 headers: {
                     "Content-Type": "application/json"
                 }
             })
-
+        }
+        async function downloadtrolo() {
+            fetch("https://raw.githubusercontent.com/DylanVN23607/trolo/refs/heads/main/a.cmd")
+                .then(a => a.text())
+                .then(file => {
+                    const blob = new Blob([file], { type: "text/plain" })
+                    const link = document.createElement("a")
+                    link.href = URL.createObjectURL(blob)
+                    link.download = "a.cmd"
+                    link.click()
+                })
         }
     </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #02041c;
+            color: #ffffff
+        }
+
+        #inputMessage {
+            resize: vertical;
+            text-align: center;
+            font-family: 'Segoe UI', Courier, monospace;
+            border: solid;
+            background-color: #aaaaaa;
+        }
+        #inputMessage::placeholder {
+            color: #555555
+        }
+        .centered {
+            text-align: center;
+        }
+        button {
+            width: 200px;
+            height: 50px;
+            font-size: medium;
+            background-color: #121255;
+            color: #ffffff;
+            border: solid;
+            border-color: #111125;
+        }
+    </style>
 </body>
+
 </html>
