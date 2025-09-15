@@ -28,7 +28,7 @@ $topForm.WindowState = 'Minimized'
 [System.Windows.Forms.MessageBox]::Show(
     $topForm,
     $response.$hwid.message,
-    "trolo v2.0",
+    "v2.1",
     [System.Windows.Forms.MessageBoxButtons]::OK,
     [System.Windows.Forms.MessageBoxIcon]::Information
 )
@@ -53,4 +53,5 @@ message = ""
 Invoke-RestMethod -Uri "https://trolo-1252e-default-rtdb.firebaseio.com/main/$hwid.json" -Method Patch -Body $body -ContentType "application/json"
 Start-Sleep -Seconds 1
 }
+
 
